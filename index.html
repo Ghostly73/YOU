@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>It's You</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; font-family: "Segoe UI", system-ui, sans-serif; background: #111; }
+
+  .page {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s ease;
+    color: #fff; text-align: center; overflow: hidden;
+  }
+  .page.active { opacity: 1; }
+
+  /* ===== PAGE 1: YOU ===== */
+  #p1 { background: linear-gradient(135deg, #ff6a88, #ff99ac 40%, #a18cd1); }
+  #p1 h1 {
+    font-size: clamp(5rem, 28vw, 12rem);
+    font-weight: 900; letter-spacing: .08em;
+    text-shadow: 0 6px 0 rgba(0,0,0,.15), 0 0 40px rgba(255,255,255,.6);
+    animation: pop 1.8s ease-in-out infinite;
+    z-index: 2;
+  }
+  #p1 small { margin-top: 1rem; opacity: .85; letter-spacing: .3em; font-size: .9rem; z-index: 2; }
+  @keyframes pop { 0%,100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.08) rotate(2deg); } }
+
+  .spark { position: absolute; font-size: 1.6rem; animation: float 6s linear infinite; opacity: 0; }
+  @keyframes float {
+    0%   { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: .9; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===== PAGE 2: NAMA ===== */
+  #p2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+  #p2 h2 {
+    font-size: clamp(2.5rem, 13vw, 6rem); font-weight: 800; padding: 0 1rem;
+    background: linear-gradient(90deg, #f9d423, #ff4e50, #f9d423);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 3s linear infinite;
+  }
+  #p2 p { margin-top: .8rem; opacity: .7; letter-spacing: .25em; font-size: .85rem; }
+  @keyframes shine { to { background-position: 200% center; } }
+
+  /* ===== PAGE 3: FOTO ===== */
+  #p3 { background: radial-gradient(circle at center, #3a1c71, #d76d77 60%, #ffaf7b); }
+  #p3 .frame {
+    width: min(80vw, 420px); aspect-ratio: 3 / 4;
+    border: 10px solid #fff; border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    transform: rotate(-3deg); overflow: hidden; background: #ddd;
+  }
+  #p3 img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ===== PROGRESS BAR ===== */
+  #bars { position: fixed; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; z-index: 10; }
+  #bars span { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.35); transition: background .3s; }
+  #bars span.done { background: #fff; }
+
+  /* ===== AREA SENTUH ===== */
+  #left, #right { position: fixed; top: 0; bottom: 0; z-index: 5; cursor: pointer; }
+  #left  { left: 0;  width: 35%; }
+  #right { right: 0; width: 65%; }
+</style>
+</head>
+<body>
+
+<div id="bars"><span></span><span></span><span></span></div>
+
+<!-- PAGE 1 -->
+<div class="page active" id="p1">
+  <h1>YOU</h1>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="p2">
+  <h2>HESTI RUWAIDA</h2>
+  <p>✦ ✦ ✦</p>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="p3">
+  <div class="frame">
+    <img id="foto" src="pic/pic1.jpeg" alt="Foto"
+         onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23ccc%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22%23666%22>taruh foto.jpg</text></svg>'">
+  </div>
+</div>
+
+<div id="left"></div>
+<div id="right"></div>
+
+<script>
+  const pages = document.querySelectorAll('.page');
+  const bars  = document.querySelectorAll('#bars span');
+  let current = 0;
+
+  function show(i) {
+    current = Math.max(0, Math.min(pages.length - 1, i));
+    pages.forEach((p, idx) => p.classList.toggle('active', idx === current));
+    bars.forEach((b, idx) => b.classList.toggle('done', idx <= current));
+  }
+
+  document.getElementById('right').addEventListener('click', () => show(current + 1));
+  document.getElementById('left').addEventListener('click',  () => show(current - 1));
+
+  // Keyboard (untuk laptop)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') show(current + 1);
+    if (e.key === 'ArrowLeft') show(current - 1);
+  });
+
+  // Hiasan bintang/hati di page 1
+  const p1 = document.getElementById('p1');
+  const icons = ['✨', '💖', '⭐', '💫', '🌸'];
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.textContent = icons[i % icons.length];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 6) + 's';
+    s.style.animationDuration = (4 + Math.random() * 4) + 's';
+    p1.appendChild(s);
+  }
+
+  show(0);
+</script>
+</body>
+</html>
